@@ -1,26 +1,33 @@
 var express = require('express');
 var router = express.Router();
 var savingsController = require("../controllers/savings.c");
+const { verifyToken, verifyRole } = require('../middlewares/auth');
 
-/* POST crear saving */
-router.post('/', (req, res) => savingsController.create(req, res));
+/* GET lista de cuentas de ahorro */
+router.get('/', verifyToken, savingsController.show);
 
-/* GET formulario de creación de saving */
-router.get('/new', (req, res) => savingsController.createForm(req, res));
+/* GET formulario de creación de cuenta de ahorro */
+router.get('/new', verifyToken, verifyRole('admin'), savingsController.createForm);
 
-/* GET listar savings */
-router.get('/', (req, res) => savingsController.show(req, res));
+/* POST crear nueva cuenta de ahorro */
+router.post('/', verifyToken, verifyRole('admin'), savingsController.create);
 
-/* GET saving por id */
-router.get('/:id', (req, res) => savingsController.showByID(req, res));
+/* GET detalle de cuenta de ahorro por ID */
+router.get('/:id', verifyToken, savingsController.showByID);
 
-/* GET formulario de edición de saving */
-router.get('/:id/edit', (req, res) => savingsController.edit(req, res));
+/* GET formulario de edición de cuenta de ahorro */
+router.get('/:id/edit', verifyToken, verifyRole('admin'), savingsController.edit);
 
-/* PUT editar saving */
-router.put('/:id', (req, res) => savingsController.update(req, res));
+/* PUT actualizar cuenta de ahorro */
+router.put('/:id', verifyToken, verifyRole('admin'), savingsController.update);
 
-/* DELETE eliminar saving */
-router.delete('/:id', (req, res) => savingsController.delete(req, res));
+/* GET confirmación de eliminación */
+router.get('/:id/delete', verifyToken, verifyRole('admin'), (req, res) => {
+  const savingId = req.params.id;
+  res.render('savings/delete', { savingId });
+});
+
+/* DELETE eliminar cuenta de ahorro */
+router.delete('/:id', verifyToken, verifyRole('admin'), savingsController.delete);
 
 module.exports = router;
