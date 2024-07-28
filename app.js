@@ -9,6 +9,7 @@ var usersRouter = require('./routes/users');
 var loansRouter = require('./routes/loans');
 var savingsRouter = require('./routes/savings');
 var cooperativesRouter = require('./routes/cooperatives');
+const authRoutes = require('./routes/auth');
 
 var app = express();
 require('dotenv').config();
@@ -29,14 +30,15 @@ app.use('/users', usersRouter);
 app.use('/loans', loansRouter);
 app.use('/savings', savingsRouter);
 app.use('/cooperatives', cooperativesRouter);
+app.use('/auth', authRoutes);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

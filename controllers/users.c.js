@@ -4,16 +4,6 @@ var savingsModel = require("../models/savings.m");
 var cooperativesModel = require("../models/cooperatives.m");
 
 class UsersController {
-  create(req, res) {
-    const user = req.body;
-    if (!user.name) {
-      return res.status(400).send("Faltan datos del usuario por agregar.");
-    }
-    usersModel.create(user)
-      .then(() => res.redirect('/users'))
-      .catch((err) => res.status(500).send(`Error al crear usuario: ${err}`));
-  }
-
   show(req, res) {
     usersModel.show()
       .then((users) => res.render('users/index', { users }))
