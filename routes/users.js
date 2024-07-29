@@ -6,14 +6,25 @@ const { verifyToken, verifyRole } = require('../middlewares/auth');
 /* GET listar usuarios */
 router.get('/', (req, res) => usersController.show(req, res));
 
-/* GET mostrar usuario por id */
-router.get('/:id', (req, res) => usersController.showByID(req, res, edit = false));
+/* GET confirmación de eliminación */
+router.get('/new', verifyToken, verifyRole('admin'), (req, res) => {
+  res.render('users/new');
+});
+
+/* GET registrar usuarios */
+router.post('/register', usersController.register);
+
+/* GET listar usuarios */
+router.get('/', usersController.show);
 
 /* GET mostrar usuario por id */
-router.get('/:id/edit', verifyToken, verifyRole('admin'), (req, res) => usersController.showByID(req, res, edit = true));
+router.get('/:id', usersController.showByID);
+
+/* GET mostrar usuario por id */
+router.get('/:id/edit', verifyToken, verifyRole('admin'), usersController.edit);
 
 /* PUT editar usuario */
-router.put('/:id', verifyToken, verifyRole('admin'), (req, res) => usersController.edit(req, res));
+router.put('/:id', verifyToken, verifyRole('admin'), usersController.update);
 
 /* GET confirmación de eliminación */
 router.get('/:id/delete', verifyToken, verifyRole('admin'), (req, res) => {

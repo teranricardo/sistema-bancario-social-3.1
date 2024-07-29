@@ -2,25 +2,44 @@ var usersModel = require("../models/users.m");
 var loansModel = require("../models/loans.m");
 var savingsModel = require("../models/savings.m");
 var cooperativesModel = require("../models/cooperatives.m");
+const bcrypt = require('bcryptjs');
 
 class UsersController {
+  async register(req, res) {
+    const { name, username, password, role } = req.body;
+    if (!name || !username || !password || !role) {
+      return res.status(400).render('error', { message: "Todos los campos son requeridos." });
+    }
+
+    try {
+      const user = await usersModel.findByUsername(username);
+      if (user) {
+        return res.status(400).render('error', { message: "El nombre de usuario ya está en uso." });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = { name, username, password: hashedPassword, role };
+      await usersModel.create(newUser);
+
+      res.status(201).redirect('/users');
+    } catch (error) {
+      res.status(500).render('error', { message: `Error al registrar usuario: ${error.message}` });
+    }
+  }
+
   show(req, res) {
     usersModel.show()
       .then((users) => res.render('users/index', { users }))
       .catch((err) => res.status(500).send(`Error al listar usuarios: ${err}`));
   }
 
-  showByID(req, res, edit) {
+  showByID(req, res) {
     const id = req.params.id;
     usersModel.showByID(id)
       .then((user) => {
         if (!user) {
           return res.status(404).send(`No se encontró el usuario con id: ${id}`);
         }
-        if (edit) {
-          return res.render('users/edit', { user });
-        }
-
         return res.render('users/show', { user });
       })
       .catch((err) => res.status(500).send(`Error al buscar usuario: ${err}`));
@@ -28,17 +47,44 @@ class UsersController {
 
   edit(req, res) {
     const id = req.params.id;
-    const updatedUser = req.body;
     usersModel.showByID(id)
       .then((user) => {
         if (!user) {
           return res.status(404).send(`No se encontró el usuario con id: ${id}`);
         }
-        usersModel.edit(updatedUser, id)
-          .then(() => res.redirect(`/users/${id}`))
-          .catch((err) => res.status(500).send(`Error al editar usuario: ${err}`));
+        res.render('users/edit', { user });
       })
       .catch((err) => res.status(500).send(`Error al buscar usuario: ${err}`));
+  }
+
+  update(req, res) {
+    const id = req.params.id;
+    const { name, username, password, role } = req.body;
+
+    usersModel.showByID(id)
+      .then(async (user) => {
+        if (!user) {
+          return res.status(404).send(`No se encontró el usuario con id: ${id}`);
+        }
+
+        // Si se proporciona una nueva contraseña, encriptarla
+        let hashedPassword = user.password; // Mantener la contraseña actual si no se proporciona una nueva
+        if (password && password.trim() !== '') {
+          hashedPassword = await bcrypt.hash(password, 10);
+        }
+
+        const updatedUser = {
+          name: name ? name : user.name,
+          username: username ? username : user.username,
+          password: hashedPassword,
+          role: role ? role : user.role
+        };
+
+        return usersModel.edit(updatedUser, id)
+          .then(() => res.redirect(`/users/${id}`))
+          .catch((err) => res.status(500).send(`Error al editar el usuario: ${err}`));
+      })
+      .catch((err) => res.status(500).send(`Error al editar el usuario: ${err}`));
   }
 
   delete(req, res) {

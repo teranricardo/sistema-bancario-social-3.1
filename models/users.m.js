@@ -51,12 +51,20 @@ class UsersModel {
 
   edit(updatedUser, id) {
     return new Promise((resolve, reject) => {
-      const query = 'UPDATE users SET name = ? WHERE id = ?';
-      pool.query(query, [updatedUser.name, id])
+      const query = `
+        UPDATE users SET 
+          name = ?, 
+          username = ?, 
+          password = ?, 
+          role = ? 
+        WHERE id = ?
+      `;
+      pool.query(query, [updatedUser.name, updatedUser.username, updatedUser.password, updatedUser.role, id])
         .then(([result]) => resolve(result.affectedRows))
         .catch(error => reject(error));
     });
   }
+
 
   delete(id) {
     return new Promise((resolve, reject) => {
