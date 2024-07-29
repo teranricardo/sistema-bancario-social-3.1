@@ -10,62 +10,50 @@
 
 <body>
   <h1>Listado de Usuarios</h1>
-  
-  <% if (users.length > 0) { %>
+
+  <% if (users.length> 0) { %>
     <table>
       <thead>
         <tr>
           <th>ID</th>
           <th>Nombre</th>
+          <th>Username</th>
+          <th>Rol</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <% users.forEach(user => { %>
+        <% users.forEach(user=> { %>
           <tr>
-            <td><%= user.id %></td>
-            <td><%= user.name %></td>
+            <td>
+              <%= user.id %>
+            </td>
+            <td>
+              <%= user.name %>
+            </td>
+            <td>
+              <%= user.username %>
+            </td>
+            <td>
+              <%= user.role %>
+            </td>
             <td>
               <a href="/users/<%= user.id %>" class="button">Ver</a>
               <a href="/users/<%= user.id %>/edit" class="button">Editar</a>
-              <button type="button" class="button_delete" onclick="confirmAndDelete('<%= user.id %>')">Eliminar</button>
+              <a href="/users/<%= user.id %>/delete" class="button_delete">Eliminar</a>
             </td>
           </tr>
-        <% }); %>
+          <% }); %>
       </tbody>
     </table>
-  <% } else { %>
-    <h2>No existen usuarios.</h2>
-  <% } %>
+    <% } else { %>
+      <h2>No existen usuarios.</h2>
+      <% } %>
 
-  <div class="button-group">
-    <a href="/users/new" class="button">Crear Usuario</a>
-    <a href="/menu" class="button_delete">Menú Principal</a>
-  </div>
-
-  <script>
-    function confirmAndDelete(userId) {
-      if (confirm('¿Estás seguro de eliminar este usuario?')) {
-        deleteUser(userId);
-      }
-    }
-
-    function deleteUser(userId) {
-      fetch(`/users/${userId}`, {
-        method: 'DELETE'
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al eliminar usuario');
-        }
-        window.location.reload();
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        window.location.reload();
-      });
-    }
-  </script>
+        <div class="button-group">
+          <a href="/users/new" class="button">Crear Usuario</a>
+          <a href="/menu" class="button_delete">Menú Principal</a>
+        </div>
 </body>
 
 </html>

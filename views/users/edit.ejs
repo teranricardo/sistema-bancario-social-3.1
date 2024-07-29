@@ -13,6 +13,22 @@
   <form id="editForm" action="/users/<%= user.id %>" method="POST">
     <label for="name">Nombre:</label>
     <input type="text" id="name" name="name" value="<%= user.name %>" required>
+
+    <label for="name">Nombre:</label>
+    <input type="text" name="name" value="<%= user.name %>" required>
+
+    <label for="username">Usuario:</label>
+    <input type="text" name="username" value="<%= user.username %>" required>
+
+    <label for="password">Contraseña:</label>
+    <input type="password" name="password" value="<%= user.password %>" required class="input">
+
+    <label for="role">Rol:</label>
+    <select name="role" value="<%= user.role %>" required>
+      <option value="usuario">Usuario</option>
+      <option value="admin">Admin</option>
+    </select>
+
     <div class="button-group">
       <button type="button" class="button" onclick="updateUser()">Guardar Cambios</button>
       <a href="/users" class="button_delete">Cancelar</a>
