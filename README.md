@@ -46,3 +46,6 @@ npm run create-db
 npm start
 ```
 - **2.**  El servidor estará escuchando en el puerto `3000`.
+
+## Video de demostración
+Puedes ver un video de demostración del proyecto [aquí](https://youtu.be/fwu26_07MRA?feature=shared).
