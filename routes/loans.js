@@ -1,23 +1,36 @@
 var express = require('express');
 var router = express.Router();
 var loansController = require("../controllers/loans.c");
+const { verifyToken, verifyRole } = require('../middlewares/auth');
 
 /* POST crear loan */
-router.post('/', (req, res) => loansController.create(req, res));
+router.post('/', loansController.create);
+
+/* GET formulario de creación de préstamo */
+router.get('/new', verifyToken, verifyRole('admin'), loansController.createForm);
 
 /* GET loan listing. */
-router.get('/', (req, res) => loansController.show(req, res));
+router.get('/', loansController.show);
 
 /* GET loan por id */
-router.get('/:id', (req, res) => loansController.showByID(req, res));
+router.get('/:id', loansController.showByID);
 
-/* PUT editar loan */
-router.put('/:id', (req, res) => loansController.edit(req, res));
+/* GET formulario de edición de préstamo */
+router.get('/:id/edit', verifyToken, verifyRole('admin'), loansController.edit);
+
+/* PUT actualizar préstamo */
+router.put('/:id', verifyToken, verifyRole('admin'), loansController.update);
+
+/* GET confirmación de eliminación */
+router.get('/:id/delete', verifyToken, verifyRole('admin'), (req, res) => {
+  const loanId = req.params.id;
+  res.render('loans/delete', { loanId });
+});
 
 /* DELETE eliminar loan */
-router.delete('/:id', (req, res) => loansController.delete(req, res));
+router.delete('/:id', verifyToken, verifyRole('admin'), loansController.delete);
 
 /* GET próxima fecha de pago de loan */
-router.get('/next-payment-date/:id', (req, res) => loansController.getNextPaymentDate(req, res));
+router.get('/next-payment-date/:id', verifyToken, verifyRole('admin'), loansController.getNextPaymentDate);
 
 module.exports = router;
